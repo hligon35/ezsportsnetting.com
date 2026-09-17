@@ -245,7 +245,6 @@ async function fetchProducts() {
     await new Promise(r=>setTimeout(r,500)); // Wait for API and other merges
     if (PRODUCTS.length > 0) return; // Already have products, no need for fallback
     
-    console.log('API not available, loading from local prodList.json');
   const res = await fetch('assets/prodList.json', { cache: 'no-cache' });
     if (!res.ok) return;
     const prodList = await res.json();
@@ -293,7 +292,6 @@ async function fetchProducts() {
     
     if (fallbackProducts.length > 0) {
       PRODUCTS = fallbackProducts;
-      console.log(`Loaded ${fallbackProducts.length} products from fallback prodList.json`);
       try { 
         window.dispatchEvent(new CustomEvent('products:loaded', { 
           detail: { count: PRODUCTS.length, source: 'fallback' } 

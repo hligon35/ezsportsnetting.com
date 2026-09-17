@@ -202,8 +202,12 @@ async function staticProducts(env) {
 }
 
 async function products(env) {
-  const stored = await listRecords(env, 'products');
-  return stored.length ? stored : staticProducts(env);
+  try {
+    const stored = await listRecords(env, 'products');
+    return stored.length ? stored : staticProducts(env);
+  } catch {
+    return staticProducts(env);
+  }
 }
 
 function normalizeItems(items, catalog) {
@@ -486,8 +490,14 @@ async function handleAnalytics(request, env, path) {
   if (path === '/api/analytics/track' || path === '/api/analytics/event') {
     if (request.method !== 'POST') return json({ message: 'Method not allowed' }, 405);
     const body = await readBody(request);
-    await putRecord(env, 'analytics', { ...body, eventName: body.eventName || body.type || 'page_view', path: body.path || new URL(request.url).pathname });
-    return json({ ok: true });
+    try {
+      await putRecord(env, 'analytics', { ...body, eventName: body.eventName || body.type || 'page_view', path: body.path || new URL(request.url).pathname });
+      return json({ ok: true, stored: true });
+    } catch (error) {
+      // Analytics must never break storefront page loads while D1 is being configured.
+      console.warn('Analytics storage unavailable', error?.message || error);
+      return json({ ok: true, stored: false });
+    }
   }
   if (path.startsWith('/api/analytics/admin/')) {
     const result = await requireAdmin(request, env); if (result.response) return result.response;
