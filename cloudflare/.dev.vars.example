@@ -1,10 +1,17 @@
+# Local Wrangler variables. Copy to cloudflare/.dev.vars and replace placeholders.
+SITE_URL=https://www.ezsportsnetting.com
+MAINTENANCE=false
+SEND_WELCOME_EMAIL=false
+DAILY_REPORT_ENABLED=false
+ADMIN_EMAILS=admin@example.com
+CONTACT_INBOX=info@ezsportsnetting.com
+ORDER_NOTIFY_TO=info@ezsportsnetting.com
+ALERT_EMAIL_TO=info@ezsportsnetting.com
 JWT_SECRET="replace-with-a-long-random-secret"
-ADMIN_EMAILS="admin@example.com"
+RESEND_API_KEY="re_replace-me"
+RESEND_FROM="EZ Sports Netting <orders@ezsportsnetting.com>"
 STRIPE_PUBLISHABLE_KEY="pk_test_replace-me"
 STRIPE_SECRET_KEY="sk_test_replace-me"
 STRIPE_WEBHOOK_SECRET="whsec_replace-me"
-RESEND_API_KEY="re_replace-me"
-RESEND_FROM="EZ Sports Netting <orders@ezsportsnetting.com>"
-CONTACT_INBOX="info@ezsportsnetting.com"
-ORDER_NOTIFY_TO="info@ezsportsnetting.com"
 TURNSTILE_SECRET_KEY=""
+GOOGLE_MAPS_API_KEY=""

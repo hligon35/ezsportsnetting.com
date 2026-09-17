@@ -21,6 +21,8 @@ From the repository root:
 
 RESEND_FROM must use a sender address from a verified Resend domain. API keys, Stripe keys, JWT secrets, and Turnstile secrets belong in Worker Secrets, not in wrangler.toml.
 
+Use `cloudflare/env.example` as the production variable checklist. Use `cloudflare/.dev.vars.example` for local Wrangler development only.
+
 ## Import existing JSON data
 
 The current repository contains JSON collections from the Render-era application. Review the generated SQL locally before applying it, especially the users and orders collections:
