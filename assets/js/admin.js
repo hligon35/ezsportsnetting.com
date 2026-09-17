@@ -11,8 +11,6 @@ const API_BASES = (() => {
     const meta = document.querySelector('meta[name="api-base"]');
     if (meta && meta.content) bases.push(String(meta.content).trim().replace(/\/$/, ''));
   } catch {}
-  // Production default (Render). Safe no-op if unreachable.
-  bases.push('https://ezsportsapp.onrender.com');
   if (location.port === '5500') {
     // Live Server development
     // Prefer higher ports first because the backend auto-increments when 4242 is in use.

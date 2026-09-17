@@ -11,8 +11,6 @@ const API_BASE = (() => {
   } catch {}
   // Same-origin works when the API server hosts the frontend.
   if (!isLiveServer) bases.push('');
-  // Production default (Render).
-  bases.push('https://ezsportsapp.onrender.com');
   if (isLiveServer) {
     bases.push(
       'http://127.0.0.1:4243','http://localhost:4243',

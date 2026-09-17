@@ -15,9 +15,6 @@ const API_BASE_CANDIDATES = (() => {
   // Same-origin works when the frontend is served by the API server.
   if (!isLiveServer) bases.push('');
 
-  // Production default (Render). Safe no-op if unreachable.
-  bases.push('https://ezsportsapp.onrender.com');
-
   // In Live Server mode, only try the API server(s) on 424x to avoid 405s on 5500.
   if (isLiveServer) {
     // Most common dev ports first (4243/4242), then higher ports.

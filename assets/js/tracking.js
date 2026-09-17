@@ -21,7 +21,6 @@ const API_BASES = (() => {
     if (meta && meta.content) bases.push(String(meta.content).replace(/\/$/, ''));
   } catch {}
   if (location.protocol.startsWith('http')) bases.push(`${location.protocol}//${location.host}`);
-  bases.push('https://ezsportsapp.onrender.com');
   ['127.0.0.1', 'localhost'].forEach(host => {
     [4243, 4242, 4244, 4245, 4246, 4247].forEach(port => {
       bases.push(`http://${host}:${port}`);

@@ -12,9 +12,10 @@ const DEBUG = (() => {
   } catch { return false; }
 })();
 // API base configuration: prefer window.__API_BASE or <meta name="api-base" content="https://api.example.com">
-// Fallback guess: Render default domain from service name (adjust if your service name changes)
+// Cloudflare migration uses same-origin API requests. Keep an optional API base
+// only for local testing or an explicitly supplied meta tag.
 const __META_API = (function(){ try{ return (document.querySelector('meta[name="api-base"]')?.content||'').trim(); }catch{ return ''; } })();
-const GUESSED_BASES = [ 'https://ezsportsapp.onrender.com' ];
+const GUESSED_BASES = [];
 let API_BASE = (typeof window !== 'undefined' && window.__API_BASE ? String(window.__API_BASE) : __META_API).replace(/\/$/, '');
 if (DEBUG) { try { console.info('[checkout] initial API_BASE =', API_BASE || '(same-origin)'); } catch {} }
 
