@@ -1,109 +1,47 @@
-Cloudflare Worker Email Sender
-==============================
+# EZ Sports Netting on Cloudflare
 
-This Worker relays transactional emails (like password reset) using MailChannels from Cloudflare’s edge.
+The migration branch uses one Cloudflare Worker for the static storefront and API, D1 for application data, and Resend for transactional email. Render, SendGrid, and the legacy MailChannels worker are no longer part of this deployment path.
 
-Files
-- `worker-email-sender.js`: The Worker script that accepts POST JSON and sends via MailChannels
-- `wrangler.toml`: Example configuration for local dev and deployment
+## First deployment
 
-Additional DB Worker files
-- `worker-db.js`: A Worker that exposes a tiny HTTP API backed by D1 (JSON collections)
-- `wrangler.db.toml`: Wrangler config for the DB Worker + D1 binding
-- `migrations/0001_collections.sql`: D1 schema (collections + meta)
+From the repository root:
 
-Prerequisites
-- A Cloudflare account (free plan is fine)
-- A domain on Cloudflare (recommended for best deliverability)
-- Node 18+ locally (for testing server; not strictly needed for Worker)
+    npm install
+    npx wrangler d1 migrations apply ezsports-prod --remote --config cloudflare/wrangler.toml
+    npx wrangler secret put JWT_SECRET --config cloudflare/wrangler.toml
+    npx wrangler secret put ADMIN_EMAILS --config cloudflare/wrangler.toml
+    npx wrangler secret put RESEND_API_KEY --config cloudflare/wrangler.toml
+    npx wrangler secret put RESEND_FROM --config cloudflare/wrangler.toml
+    npx wrangler secret put STRIPE_SECRET_KEY --config cloudflare/wrangler.toml
+    npx wrangler secret put STRIPE_WEBHOOK_SECRET --config cloudflare/wrangler.toml
+    npx wrangler secret put STRIPE_PUBLISHABLE_KEY --config cloudflare/wrangler.toml
+    npx wrangler deploy --config cloudflare/wrangler.toml
 
-Quick Start
-1) Install Wrangler CLI
-   - `npm install -g wrangler`
+RESEND_FROM must use a sender address from a verified Resend domain. API keys, Stripe keys, JWT secrets, and Turnstile secrets belong in Worker Secrets, not in wrangler.toml.
 
-2) Login
-   - `wrangler login`
+## Import existing JSON data
 
-3) Create a new Worker project (optional if you want a separate repo)
-   - `wrangler init ez-email-worker --type=javascript`
-   - Replace the generated `src/index.js` with `cloudflare/worker-email-sender.js` from this repo
-   - Or, run `wrangler dev cloudflare/worker-email-sender.js`
+The current repository contains JSON collections from the Render-era application. Review the generated SQL locally before applying it, especially the users and orders collections:
 
-4) Set Worker environment variables
-   - In Cloudflare dashboard → Workers & Pages → Select your Worker → Settings → Variables:
-     - `CF_EMAIL_API_KEY` = a shared secret string (also set on your server)
-   - `DEFAULT_FROM` = `no-reply@yourdomain.com` (optional)
+    node cloudflare/scripts/export-json-to-sql.mjs > /tmp/ezsports-import.sql
+    npx wrangler d1 execute ezsports-prod --remote --file=/tmp/ezsports-import.sql --config cloudflare/wrangler.toml
 
-5) Deploy
-   - `wrangler deploy cloudflare/worker-email-sender.js`
-   - Note the Worker URL (e.g., https://your-worker.your-subdomain.workers.dev)
+Do not commit the generated SQL file. Rotate any credentials that were ever stored in the public repository before importing production data.
 
-6) Configure your server
-   - Add these env vars for the Node server:
-     - `APP_BASE_URL=https://yourdomain.com`
-     - `CF_EMAIL_WEBHOOK_URL=https://your-worker.your-subdomain.workers.dev`
-     - `CF_EMAIL_API_KEY=<same value as Worker>`
-   - `MAIL_FROM=no-reply@yourdomain.com`
-   - Optionally, set `CONTACT_INBOX` to the address that should receive internal notifications, e.g. `info@yourdomain.com`.
+## Stripe webhook
 
-7) DNS & Deliverability
+After deployment, point the Stripe webhook to:
 
-   - Use a real domain you control for the `From` address (e.g., `no-reply@yourdomain.com`).
-   - If you don’t have a real `no-reply@` mailbox, create a forward/alias from `no-reply@yourdomain.com` to `info@yourdomain.com` (or any monitored inbox).
-   - Add/verify SPF to include MailChannels: `v=spf1 include:relay.mailchannels.net ~all`
-   - Add DMARC: `_dmarc.yourdomain.com TXT "v=DMARC1; p=none; rua=mailto:postmaster@yourdomain.com"`
-   - DKIM: Optional. For best alignment, configure DKIM for your domain or your ESP. MailChannels can also operate without per-domain DKIM, but DMARC alignment may be stricter.
-   - Reply-To: The Worker supports `replyTo`; your server can pass `replyTo: "info@yourdomain.com"` so customers can reply even if using a `no-reply@` From.
+    https://www.ezsportsnetting.com/webhook/stripe
 
-8) Test
+The Worker validates the Stripe signature, marks the D1 order paid, and sends customer/internal notifications through Resend.
 
-   - Visit `/forgot-password.html` in your app, request a reset
-   - Check Worker logs (Cloudflare dashboard) and your inbox
+## Custom domain
 
-Security
+Attach both ezsportsnetting.com and www.ezsportsnetting.com to the Worker. The Worker redirects the apex host to the canonical www host. The sitemap, robots file, and page canonicals use the same canonical host.
 
-- The Worker requires an Authorization header if `CF_EMAIL_API_KEY` is set. The server sends `Authorization: Bearer <CF_EMAIL_API_KEY>`.
-- Keep the Worker URL secret; rely on the token for protection.
+## Local development
 
-Local Dev
+    npx wrangler dev --config cloudflare/wrangler.toml
 
-- `wrangler dev cloudflare/worker-email-sender.js` will start a local endpoint; update `CF_EMAIL_WEBHOOK_URL` accordingly when testing locally.
-
-Cloudflare D1 Database Worker (Production DB)
---------------------------------------------
-
-This repo can run production storage in Cloudflare (D1) while keeping the existing JSON-file database for local development.
-
-1) Install Wrangler CLI
-   - `npm install -g wrangler`
-
-2) Login
-   - `wrangler login`
-
-3) Create a D1 database
-   - `wrangler d1 create ezsports-prod`
-
-4) Bind D1 to the Worker
-   - Edit `cloudflare/wrangler.db.toml`:
-     - Set `database_id` from step (3)
-     - Optionally set `CF_DB_API_KEY` (recommended)
-
-5) Apply migrations
-   - `wrangler d1 migrations apply ezsports-prod --config wrangler.db.toml --cwd cloudflare --remote`
-
-6) Run locally (optional)
-   - `wrangler dev --config cloudflare/wrangler.db.toml`
-   - Your DB Worker URL will be printed; use it for `EZ_CF_DB_URL`
-
-7) Deploy
-   - `wrangler deploy --config cloudflare/wrangler.db.toml`
-
-8) Configure the Node server (Render)
-   - Set:
-     - `EZ_DB_DRIVER=cloudflare`
-     - `EZ_CF_DB_URL=<your worker URL>`
-     - `EZ_CF_DB_API_KEY=<same value as CF_DB_API_KEY>`
-
-Security
-
-- If `CF_DB_API_KEY` is set on the Worker, requests must include `Authorization: Bearer <token>`.
+Copy .dev.vars.example to .dev.vars and fill in test credentials. Never commit .dev.vars.

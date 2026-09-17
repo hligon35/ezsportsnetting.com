@@ -1,24 +1,24 @@
-name = "ez-email-worker"
-main = "worker-email-sender.js"
-compatibility_date = "2024-05-24"
+name = "ezsportsnetting"
+main = "worker.js"
+compatibility_date = "2026-01-01"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+
+[assets]
+directory = ".."
+binding = "ASSETS"
+not_found_handling = "none"
 
 [vars]
-DEFAULT_FROM = "no-reply@ezsportsnetting.com"
+SITE_URL = "https://www.ezsportsnetting.com"
+SEND_WELCOME_EMAIL = "false"
+DAILY_REPORT_ENABLED = "false"
 
-[env.production.vars]
-# CF_EMAIL_API_KEY=78d92d9b-88a2-44d2-9ceb-0cdc838e57f0
+[[d1_databases]]
+binding = "DB"
+database_name = "ezsports-prod"
+database_id = "53d1f79c-2e74-4d18-ae8d-00fab25986c6"
+migrations_dir = "migrations"
 
-[observability]
-enabled = false
-head_sampling_rate = 1
-
-[observability.logs]
-enabled = true
-head_sampling_rate = 1
-persist = true
-invocation_logs = true
-
-[observability.traces]
-enabled = true
-persist = true
-head_sampling_rate = 1
+[triggers]
+crons = ["0 13 * * *"]

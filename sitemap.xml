@@ -1,42 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- SEO: Public, indexable pages only (exclude checkout/auth/account/admin/search flows). -->
-  <url><loc>https://ezsportsnetting.com/</loc></url>
-  <url><loc>https://ezsportsnetting.com/about.html</loc></url>
-  <url><loc>https://ezsportsnetting.com/contactus.html</loc></url>
-  <url><loc>https://ezsportsnetting.com/support.html</loc></url>
+  <url><loc>https://www.ezsportsnetting.com/</loc></url>
+  <url><loc>https://www.ezsportsnetting.com/about.html</loc></url>
+  <url><loc>https://www.ezsportsnetting.com/contactus.html</loc></url>
+  <url><loc>https://www.ezsportsnetting.com/support.html</loc></url>
 
   <!-- Netting overview + calculator -->
-  <url><loc>https://ezsportsnetting.com/ez-nets.html</loc></url>
-  <url><loc>https://ezsportsnetting.com/netting-calculator.html</loc></url>
+  <url><loc>https://www.ezsportsnetting.com/ez-nets.html</loc></url>
+  <url><loc>https://www.ezsportsnetting.com/netting-calculator.html</loc></url>
 
   <!-- Netting category pages -->
-  <url><loc>https://ezsportsnetting.com/baseball-netting.html</loc></url>
-  <url><loc>https://ezsportsnetting.com/training-facility.html</loc></url>
-  <url><loc>https://ezsportsnetting.com/golf-netting.html</loc></url>
-  <url><loc>https://ezsportsnetting.com/sports-netting.html</loc></url>
-  <url><loc>https://ezsportsnetting.com/commercial-netting.html</loc></url>
+  <url><loc>https://www.ezsportsnetting.com/baseball-netting.html</loc></url>
+  <url><loc>https://www.ezsportsnetting.com/training-facility.html</loc></url>
+  <url><loc>https://www.ezsportsnetting.com/golf-netting.html</loc></url>
+  <url><loc>https://www.ezsportsnetting.com/sports-netting.html</loc></url>
+  <url><loc>https://www.ezsportsnetting.com/commercial-netting.html</loc></url>
 
   <!-- L-Screens hub and subpages -->
-  <url><loc>https://ezsportsnetting.com/l-screens.html</loc></url>
-  <url><loc>https://ezsportsnetting.com/baseball-l-screens.html</loc></url>
-  <url><loc>https://ezsportsnetting.com/protective-screens.html</loc></url>
-  <url><loc>https://ezsportsnetting.com/pitchers-pocket.html</loc></url>
-  <url><loc>https://ezsportsnetting.com/replacement-screens.html</loc></url>
+  <url><loc>https://www.ezsportsnetting.com/l-screens.html</loc></url>
+  <url><loc>https://www.ezsportsnetting.com/baseball-l-screens.html</loc></url>
+  <url><loc>https://www.ezsportsnetting.com/protective-screens.html</loc></url>
+  <url><loc>https://www.ezsportsnetting.com/pitchers-pocket.html</loc></url>
+  <url><loc>https://www.ezsportsnetting.com/replacement-screens.html</loc></url>
 
   <!-- Other catalog hubs -->
-  <url><loc>https://ezsportsnetting.com/pre-made-cages.html</loc></url>
-  <url><loc>https://ezsportsnetting.com/bullet-pad-kits.html</loc></url>
-  <url><loc>https://ezsportsnetting.com/accessories.html</loc></url>
+  <url><loc>https://www.ezsportsnetting.com/pre-made-cages.html</loc></url>
+  <url><loc>https://www.ezsportsnetting.com/bullet-pad-kits.html</loc></url>
+  <url><loc>https://www.ezsportsnetting.com/accessories.html</loc></url>
 
   <!-- Company + policies -->
-  <url><loc>https://ezsportsnetting.com/careers.html</loc></url>
-  <url><loc>https://ezsportsnetting.com/privacy-policy.html</loc></url>
+<url><loc>https://www.ezsportsnetting.com/privacy-policy.html</loc></url>
 
   <!-- Help center articles -->
-  <url><loc>https://ezsportsnetting.com/help-shipping.html</loc></url>
-  <url><loc>https://ezsportsnetting.com/help-returns.html</loc></url>
-  <url><loc>https://ezsportsnetting.com/help-warranty.html</loc></url>
-  <url><loc>https://ezsportsnetting.com/help-sizing.html</loc></url>
-  <url><loc>https://ezsportsnetting.com/help-payments.html</loc></url>
+  <url><loc>https://www.ezsportsnetting.com/help-shipping.html</loc></url>
+  <url><loc>https://www.ezsportsnetting.com/help-returns.html</loc></url>
+  <url><loc>https://www.ezsportsnetting.com/help-warranty.html</loc></url>
+  <url><loc>https://www.ezsportsnetting.com/help-sizing.html</loc></url>
+  <url><loc>https://www.ezsportsnetting.com/help-payments.html</loc></url>
+  <url><loc>https://www.ezsportsnetting.com/training-facility-design.html</loc></url>
 </urlset>
