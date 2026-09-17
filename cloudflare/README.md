@@ -2,6 +2,8 @@
 
 The migration branch uses one Cloudflare Worker for the static storefront and API, D1 for application data, and Resend for transactional email. Render, SendGrid, and the legacy MailChannels worker are no longer part of this deployment path.
 
+The included GitHub Actions deployment is manual until the repository Cloudflare secrets are configured.
+
 ## First deployment
 
 From the repository root:

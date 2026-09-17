@@ -1,8 +1,6 @@
 name: Deploy EZ Sports Netting to Cloudflare
 
 on:
-  push:
-    branches: [migration]
   workflow_dispatch:
 
 jobs:
