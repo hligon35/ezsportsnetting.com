@@ -319,7 +319,7 @@ async function handleUsers(request, env, path) {
     return json({ user: publicUser, token }, 201, { 'Set-Cookie': cookieHeader(token) });
   }
   if (path === '/api/users/login' && request.method === 'POST') {
-    const identity = String(body.email || body.username || '').trim().toLowerCase();
+    const identity = String(body.email || body.username || body.identifier || '').trim().toLowerCase();
     const users = await listRecords(env, 'users');
     const user = users.find(item => cleanEmail(item.email) === identity || String(item.username || '').toLowerCase() === identity);
     if (!user || !(await bcrypt.compare(String(body.password || ''), String(user.password || '')))) return json({ message: 'Invalid email or password' }, 401);
@@ -460,6 +460,15 @@ async function handleOrders(request, env, path) {
     const result = await requireAdmin(request, env); if (result.response) return result.response;
     return json(await listRecords(env, 'orders'));
   }
+  if (path === '/api/orders/admin/stats' && request.method === 'GET') {
+    const result = await requireAdmin(request, env); if (result.response) return result.response;
+    const orders = await listRecords(env, 'orders');
+    return json({
+      totalOrders: orders.length,
+      paidOrders: orders.filter(order => order.status === 'paid').length,
+      revenue: orders.filter(order => order.status === 'paid').reduce((sum, order) => sum + asNumber(order.total), 0)
+    });
+  }
   const match = path.match(/^\/api\/orders\/([^/]+)(?:\/status)?$/);
   if (match && request.method === 'PATCH' && path.endsWith('/status')) {
     const result = await requireAdmin(request, env); if (result.response) return result.response;
@@ -508,7 +517,24 @@ async function handleAdmin(request, env, path) {
   if (path === '/api/admin/products/sync' && request.method === 'POST') return json({ ok: true, message: 'Products are read from D1 and the static catalog. Use the JSON-to-SQL import script for a bulk catalog refresh.', discovered: 0, wrote: 0 });
   if (path === '/api/admin/prodlist/bulk-update' && request.method === 'POST') return json({ ok: true, changed: 0, message: 'Bulk source-file edits are disabled in Workers; update D1 records instead.' });
   if (path === '/api/admin/stripe/summary' || path === '/api/admin/stripe/payouts-local' || path === '/api/admin/stripe/invoices') return json({ items: [], summary: { gross: 0, refunds: 0, fees: 0, net: 0 }, message: 'Stripe reporting can be added with the Stripe API credentials.' });
+  if (path === '/api/admin/cloudflare/summary') return json({ totals: { requests: 0, cachedRequests: 0, threats: 0, bytes: 0, cachedBytes: 0 }, topPaths: [], byCountry: [], series: [] });
+  if (path === '/api/admin/billing-portal') return json({ message: 'Billing portal is not configured for this Worker deployment.' }, 501);
   return json({ message: 'Admin route not found' }, 404);
+}
+
+async function handleInvoices(request, env, path) {
+  const result = await requireAdmin(request, env); if (result.response) return result.response;
+  if (path === '/api/invoices/admin/all' && request.method === 'GET') return json(await listRecords(env, 'invoices'));
+  const match = path.match(/^\/api\/invoices\/([^/]+)(?:\/print)?$/);
+  if (!match) return json({ message: 'Invoice route not found' }, 404);
+  const invoice = await getRecord(env, 'invoices', decodeURIComponent(match[1]));
+  if (!invoice) return json({ message: 'Invoice not found' }, 404);
+  if (path.endsWith('/print')) {
+    const title = String(invoice.id || 'Invoice').replace(/[<>&"']/g, '');
+    return new Response('<!doctype html><html><head><meta charset="utf-8"><title>' + title + '</title></head><body><pre>' +
+      JSON.stringify(invoice, null, 2).replace(/[<>&]/g, '') + '</pre><script>window.print()</script></body></html>', { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
+  }
+  return json(invoice);
 }
 
 async function handleErrors(request, env, path) {
@@ -598,6 +624,7 @@ async function handleApi(request, env) {
   if (path === '/api/order' || path.startsWith('/api/orders')) { try { return await handleOrders(request, env, path); } catch (error) { return json({ message: error.message || 'Order request failed' }, 500); } }
   if (path.startsWith('/api/analytics')) { try { return await handleAnalytics(request, env, path); } catch (error) { return json({ message: error.message || 'Analytics request failed' }, 500); } }
   if (path.startsWith('/api/admin')) { try { return await handleAdmin(request, env, path); } catch (error) { return json({ message: error.message || 'Admin request failed' }, 500); } }
+  if (path.startsWith('/api/invoices')) { try { return await handleInvoices(request, env, path); } catch (error) { return json({ message: error.message || 'Invoice request failed' }, 500); } }
   if (path.startsWith('/api/errors')) { try { return await handleErrors(request, env, path); } catch (error) { return json({ message: error.message || 'Error report failed' }, 500); } }
   return json({ message: 'API route not found' }, 404);
 }
