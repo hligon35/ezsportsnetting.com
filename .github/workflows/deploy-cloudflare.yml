@@ -18,7 +18,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
       - run: npm install
       - name: Deploy Worker
         if: env.CF_API_TOKEN != '' && env.CF_ACCOUNT_ID != ''
